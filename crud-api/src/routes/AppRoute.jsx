@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router'
 import Master from '../layout/Master'
 import ProductList from '../pages/ProductList'
 import AddProduct from '../pages/AddProduct'
-import EditProduct from '../pages/EditProduct'
 
 const AppRoute = () => {
   return (
@@ -11,7 +10,7 @@ const AppRoute = () => {
       <Route path='/' element={<Master/>}>
         <Route index element={<ProductList/>}/>
         <Route path='create' element={<AddProduct/>}/>
-        <Route path='edit/:id' element={<EditProduct/>}/>
+        <Route path='edit' element={<AddProduct/>}/>
       </Route>
     </Routes> 
   )

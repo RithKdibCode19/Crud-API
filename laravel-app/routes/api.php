@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::get('/product',[ProductController::class,'index'])->name('pro');
-Route::post('/product',[ProductController::class,'store'])->name('addpro');
-Route::get('/product/{id}',[ProductController::class,'show'])->name('showpro');
-Route::post('/product/{id}',[ProductController::class,'update'])->name('edit');
-Route::delete('/product/{id}',[ProductController::class,'destroy'])->name('delpro');
+Route::get('/product',[ProductController::class,'index']);
+Route::post('/product',[ProductController::class,'store']);
+Route::get('/product/{id}',[ProductController::class,'show']);
+Route::post('/product/{id}',[ProductController::class,'update']);
+Route::delete('/product/{id}',[ProductController::class,'destroy']);
 

@@ -9,76 +9,72 @@ use Exception;
 
 class ProductController extends Controller
 {
-    public function index()
-    {
-        try {
+    public function index(){
+        try{
             $products = Product::all();
             return response([
-                'message' => 'Products retrieved successfully',
+                'message' => 'Data retrieve success',
                 'products' => $products
             ], 200);
-        } catch (Exception $e) {
+        }
+        catch(Exception $e){
             return response([
-                'message' => 'Failed to retrieve products',
+                'message' => 'Error Rule API',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:1',
-            'qty' => 'required|integer|min:1',
-            'status' => 'required|in:active,inactive',
-            'image' => 'nullable|image|max:2048',
+    public function store(Request $request){
+        $validator = Validator::make($request->all(),[
+            'name'=>'required|string|max:255',
+            'price'=>'required|numeric|min:1',
+            'qty'=>'required|integer|min:1',
+            'status'=>'required|in:active,inactive',
+            'image'=>'nullable|image|max:2048',
         ]);
 
-        if ($validator->fails()) {
+        if($validator->fails()){
             return response([
-                'message' => 'Check All field, u has error validator rule'
+                'message' => 'Check All field, u has error validator rule',
+                'errors' => $validator->errors()
             ], 422);
         }
+
         try {
-            $product = Product::create([
-                'name' => $request->name,
-                'price' => $request->price,
-                'qty' => $request->qty,
-                'status' => $request->status,
+            $products = Product::create([
+                'name' =>$request->name,
+                'price' =>$request->price,
+                'qty' =>$request->qty,
+                'status' =>$request->status,
             ]);
 
             return response([
-                'message' => 'Product created successfully',
-                'product' => $product
+                'message' => 'Data create success',
+                'products' => $products
             ], 201);
-
         } catch (Exception $e) {
             return response([
-                'message' => 'Product created failed',
+                'message' => 'Data create fails',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
-    public function show($id)
-    {
-        try {
-            $product = Product::findOrFail($id);
+    public function show($id){
+        $product = Product::find($id);
+        if (!$product) {
             return response([
-                'message' => 'Product retrieved successfully',
-                'product' => $product
-            ], 200);
-        } catch (Exception $e) {
-            return response([
-                'message' => 'Product not found',
-                'error' => $e->getMessage()
+                'message' => 'Product not found'
             ], 404);
         }
+        return response([
+            'message' => 'Data retrieved successfully',
+            'product' => $product
+        ], 200);
     }
 
-    public function update($id, Request $request)
-    {
+    public function update($id,Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:1',
@@ -89,7 +85,8 @@ class ProductController extends Controller
 
         if ($validator->fails()) {
             return response([
-                'message' => 'Check All field, u has error validator rule'
+                'message' => 'Validation failed. Please check all fields.',
+                'errors' => $validator->errors()
             ], 422);
         }
 
@@ -114,14 +111,14 @@ class ProductController extends Controller
         }
     }
 
-    public function destroy($id)
-    {
+    public function destroy($id){
         try {
-            $product = Product::findOrFail($id);
-            $product->delete();
-            return response([
-                'message' => 'Product deleted successfully'
-            ], 200);
+        $product = Product::findOrFail($id);
+        $product->delete();
+
+        return response([
+            'message' => 'Product deleted successfully'
+        ], 200);
         } catch (Exception $e) {
             return response([
                 'message' => 'Product deletion failed',

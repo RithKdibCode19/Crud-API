@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { getProducts } from '../services/productServices';
+import { deleteProduct, getProducts } from '../services/productServices';
+import { Link } from 'react-router';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
 
   useEffect( () => {
     const fetchProducts = async () => {
-      await getProducts();
+      let data = await getProducts();
+      setProducts(data);
+      
     }
     fetchProducts();
   },[]);
+
+
   return (
     <div>
       <div className="d-flex justify-between align-middle mb-3">
@@ -27,16 +32,20 @@ const ProductList = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Product 1</td>
-            <td>10$</td>
-            <td>10</td>
-            <td>
-              <a href='/edit'>Edit</a>
-              <button>Delete</button>
-            </td>
-          </tr>
+          {
+            products.map( (product) => (
+              <tr key={product.id}>
+                <td>{product.id}</td>
+                <td>{product.name}</td>
+                <td>{product.price}</td>
+                <td>{product.qty}</td>
+                <td>
+                  <Link to={`/edit/${product.id}`} className='btn btn-primary me-2'>Edit</Link>
+                  <button onClick={() => deleteProduct(product.id)} className='btn btn-danger'>Delete</button>
+                </td>
+              </tr>
+            ))
+          }
         </tbody>
       </table>
     </div>
