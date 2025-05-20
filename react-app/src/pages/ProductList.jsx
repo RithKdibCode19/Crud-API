@@ -19,9 +19,9 @@ const ProductList = () => {
     <div>
       <div className="d-flex justify-between align-middle mb-3">
             <h3>Add Producct</h3>
-            <a className="btn btn-sucess" href="/create">Add More</a>
+            <a className="btn btn-success" href="/create">Add More</a>
         </div>
-      <table className='table table-bordered text-center'>
+      <table className='table table-bordered table-hover text-center'>
         <thead className='table-dark'>
           <tr>
             <th>ID</th>
@@ -34,6 +34,7 @@ const ProductList = () => {
         <tbody>
           {
             products.map( (product) => (
+              product.status == "active" &&
               <tr key={product.id}>
                 <td>{product.id}</td>
                 <td>{product.name}</td>

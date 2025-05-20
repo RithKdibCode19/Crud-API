@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Product;
+use App\Models\Order;
 use Exception;
 
 class ProductController extends Controller
@@ -114,7 +115,9 @@ class ProductController extends Controller
     public function destroy($id){
         try {
         $product = Product::findOrFail($id);
-        $product->delete();
+        $product = Product::where('id', $id)->update([
+            'status' => 'inactive'
+        ]);
 
         return response([
             'message' => 'Product deleted successfully'
@@ -125,5 +128,13 @@ class ProductController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getOrders(){
+        $orders = Order::all();
+        return response([
+            'message' => 'Orders retrieved successfully',
+            'orders' => $orders
+        ], 200);
     }
 }

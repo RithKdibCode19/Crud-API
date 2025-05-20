@@ -46,7 +46,7 @@ const EditProduct = () => {
     <div>
       <div className="d-flex justify-between align-middle mb-3">
         <h3>Edit Product</h3>
-        <a className="btn btn-success" href="/">Back</a>
+        <a className="btn btn-danger" href="/">Back</a>
       </div>
       <form className="row g-3" onSubmit={handleEdit}>
         <div className="col-md-6">

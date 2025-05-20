@@ -18,7 +18,7 @@ const AddProduct = () => {
     <div>
       <div className="d-flex justify-between align-middle mb-3">
         <h3>Add Product</h3>
-        <a className="btn btn-success" href="/">Back</a>
+        <a className="btn btn-danger" href="/">Back</a>
       </div>
       <form className="row g-3" onSubmit={handleCreate}>
         <div className="col-md-6">
@@ -33,7 +33,7 @@ const AddProduct = () => {
           <label htmlFor="inputQty" className="form-label">Quantity</label>
           <input type="text" className="form-control" id="inputQty" name="qty" placeholder="Enter quantity" />
         </div>
-        <select class="form-select" aria-label="Default select example" name="status">
+        <select className="form-select" aria-label="Default select example" name="status">
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>

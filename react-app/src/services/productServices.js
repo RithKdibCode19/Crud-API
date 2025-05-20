@@ -67,3 +67,21 @@ export const updateProduct = async (id, data) => {
         throw error;
     }
 };
+
+export const getOrders = async () => {
+    try {
+        let response = await api.get('/api/orders');
+        if(response.status == 200){
+            return response.data.orders;
+        }
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        throw error;
+    }
+}
+
+
+
+
+
+
