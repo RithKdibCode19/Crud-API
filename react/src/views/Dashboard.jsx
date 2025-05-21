@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import React from 'react';
 import { FaShoppingCart, FaUsers, FaBox, FaMoneyBillWave } from 'react-icons/fa';
 
-function Dashboard() {
-
+const Dashboard = () => {
   return (
-     <div>
+    <div>
       <h2 className="mb-4">Dashboard</h2>
       
       {/* Summary Cards */}
@@ -107,8 +106,8 @@ function Dashboard() {
           </div>
         </div>
       </div>
-    </div>  
-  )
-}
+    </div>
+  );
+};
 
-export default Dashboard
+export default Dashboard; 

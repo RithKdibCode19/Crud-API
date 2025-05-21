@@ -7,6 +7,11 @@ import NotFound from "./views/NotFound";
 import Signup from "./views/Signup";
 import Users from "./views/Users";
 import UserForm from "./views/UserForm";
+import Products from "./views/Products";
+// import ProductList from "./views/ProductList";
+import POS from "./views/POS.jsx";
+import Customers from "./views/Customers.jsx";
+import Reports from "./views/Reports.jsx";
 
 const router = createBrowserRouter([
   {
@@ -15,14 +20,14 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Navigate to="/users"/>
+        element: <Navigate to="/dashboard"/>
       },
       {
         path: '/dashboard',
         element: <Dashboard/>
       },
       {
-        path: '/users',
+        path: '/user',
         element: <Users/>
       },
       {
@@ -32,6 +37,22 @@ const router = createBrowserRouter([
       {
         path: '/users/:id',
         element: <UserForm key="userUpdate" />
+      },
+      {
+        path: '/products',
+        element: <Products/>
+      },
+      {
+        path: '/pos',
+        element: <POS/>
+      },
+      {
+        path: '/customers',
+        element: <Customers/>
+      },
+      {
+        path: '/reports',
+        element: <Reports/>
       }
     ]
   },
