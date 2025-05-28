@@ -5,13 +5,16 @@ import GuestLayout from "./components/GuestLayout";
 import Login from "./views/Login";
 import NotFound from "./views/NotFound";
 import Signup from "./views/Signup";
-import Users from "./views/Users";
-import UserForm from "./views/UserForm";
-import Products from "./views/Products";
+import Users from "./views/users/Users.jsx";
+import UserForm from "./views/users/UserForm.jsx";
+import Products from "./views/products/Products.jsx";
 // import ProductList from "./views/ProductList";
 import POS from "./views/POS.jsx";
 import Customers from "./views/Customers.jsx";
 import Reports from "./views/Reports.jsx";
+import ProductForm from "./views/products/ProductForm.jsx";
+import Category from "./views/categories/Category.jsx";
+import CategoryForm from "./views/categories/CategoryForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +44,26 @@ const router = createBrowserRouter([
       {
         path: '/products',
         element: <Products/>
+      },
+      {
+        path: '/products/:id',
+        element: <ProductForm key="productUpdate"/>
+      },
+      {
+        path: '/products/new',
+        element: <ProductForm key="productCreate"/>
+      },
+      {
+        path: '/categories',
+        element: <Category/>
+      },
+      {
+        path: '/categories/:id',
+        element: <CategoryForm key="categoryUpdate"/>
+      },
+      {
+        path: '/categories/new',
+        element: <CategoryForm key="categoryCreate"/>
       },
       {
         path: '/pos',

@@ -48,6 +48,19 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="col-md-3">
+          <div className="card bg-info text-white">
+            <div className="card-body">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 className="card-title">Category</h6>
+                  <h3 className="mb-0">120</h3>
+                </div>
+                <FaBox size={30} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
           <div className="card bg-warning text-white">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center">

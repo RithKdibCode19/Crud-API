@@ -73,6 +73,9 @@ export default function DefaultLayout() {
           <Link to="/products" className="nav-link text-white mb-2 d-flex align-items-center">
             <FaBox className="me-2" /> Products
           </Link>
+          <Link to="/categories" className="nav-link text-white mb-2 d-flex align-items-center">
+            <FaBox className="me-2" /> Category
+          </Link>
           <Link to="/customers" className="nav-link text-white mb-2 d-flex align-items-center">
             <FaUsers className="me-2" /> Customers
           </Link>
