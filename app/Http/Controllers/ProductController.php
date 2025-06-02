@@ -17,7 +17,7 @@ class ProductController extends Controller
     public function index()
     {
         try{
-            $products = Product::all();
+            $products = Product::with('category')->get();
             return response()->json([
                 'message' => 'Data retrieve success',
                 'products' => $products
@@ -45,6 +45,7 @@ class ProductController extends Controller
             'qty'=>'required|integer|min:1',
             'status'=>'required|in:active,inactive',
             'image'=>'nullable|image|max:2048',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         if($validator->fails()){
@@ -55,11 +56,21 @@ class ProductController extends Controller
         }
 
         try {
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('image'), $filename);
+                $imagePath = 'image/' . $filename;
+            }
+
             $products = Product::create([
                 'name' =>$request->name,
                 'price' =>$request->price,
                 'qty' =>$request->qty,
                 'status' =>$request->status,
+                'category_id' => $request->category_id,
+                'image' => $imagePath,
             ]);
 
             return response([
@@ -109,6 +120,7 @@ class ProductController extends Controller
             'qty' => 'required|integer|min:1',
             'status' => 'required|in:active,inactive',
             'image' => 'nullable|image|max:2048',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         if ($validator->fails()) {
@@ -120,11 +132,22 @@ class ProductController extends Controller
 
         try {
             $product = Product::findOrFail($id);
+
+            $imagePath = $product->image;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('image'), $filename);
+                $imagePath = 'image/' . $filename;
+            }
+
             $product->update([
                 'name' => $request->name,
                 'price' => $request->price,
                 'qty' => $request->qty,
                 'status' => $request->status,
+                'category_id' => $request->category_id,
+                'image' => $imagePath,
             ]);
 
             return response([

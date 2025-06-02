@@ -10,11 +10,12 @@ import UserForm from "./views/users/UserForm.jsx";
 import Products from "./views/products/Products.jsx";
 // import ProductList from "./views/ProductList";
 import POS from "./views/POS.jsx";
-import Customers from "./views/Customers.jsx";
+import Customers from "./views/customers/Customers.jsx";
 import Reports from "./views/Reports.jsx";
 import ProductForm from "./views/products/ProductForm.jsx";
 import Category from "./views/categories/Category.jsx";
 import CategoryForm from "./views/categories/CategoryForm.jsx";
+import CustomerForm from "./views/customers/CustomerForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +65,14 @@ const router = createBrowserRouter([
       {
         path: '/categories/new',
         element: <CategoryForm key="categoryCreate"/>
+      },
+      {
+        path: '/customers/new',
+        element: <CustomerForm key="createCustomer"/>
+      },
+      {
+        path: '/customers/:id',
+        element: <CustomerForm key="updateCustomer"/>
       },
       {
         path: '/pos',

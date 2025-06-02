@@ -6,12 +6,10 @@ import {useStateContext} from "../../context/ContextProvider.jsx";
 export default function CategoryForm() {
   const navigate = useNavigate();
   let {id} = useParams();
-  const [user, setUser] = useState({
+  const [category, setCategory] = useState({
     id: null,
     name: '',
-    email: '',
-    password: '',
-    password_confirmation: ''
+    description: '',
   })
   const [errors, setErrors] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -20,10 +18,11 @@ export default function CategoryForm() {
   if (id) {
     useEffect(() => {
       setLoading(true)
-      axiosClient.get(`/users/${id}`)
+      axiosClient.get(`/categories/${id}`)
         .then(({data}) => {
           setLoading(false)
-          setUser(data)
+          setCategory(data.category)
+          console.log(data)
         })
         .catch(() => {
           setLoading(false)
@@ -33,11 +32,11 @@ export default function CategoryForm() {
 
   const onSubmit = ev => {
     ev.preventDefault()
-    if (user.id) {
-      axiosClient.put(`/users/${user.id}`, user)
+    if (category.id) {
+      axiosClient.put(`/categories/${category.id}`, category)
         .then(() => {
-          setNotification('User was successfully updated')
-          navigate('/users')
+          setNotification('Category was successfully updated')
+          navigate('/categories')
         })
         .catch(err => {
           const response = err.response;
@@ -46,10 +45,10 @@ export default function CategoryForm() {
           }
         })
     } else {
-      axiosClient.post('/users', user)
+      axiosClient.post('/categories', category)
         .then(() => {
-          setNotification('User was successfully created')
-          navigate('/user')
+          setNotification('Cat was successfully created')
+          navigate('/categories')
         })
         .catch(err => {
           const response = err.response;
@@ -62,8 +61,8 @@ export default function CategoryForm() {
 
   return (
     <>
-      {user.id && <h1>Update User: {user.name}</h1>}
-      {!user.id && <h1>New User</h1>}
+      {category.id && <h1>Update Category: {category.name}</h1>}
+      {!category.id && <h1>New Category</h1>}
       <div className="card animated fadeInDown">
         {loading && (
           <div className="text-center">
@@ -79,10 +78,8 @@ export default function CategoryForm() {
         }
         {!loading && (
           <form onSubmit={onSubmit}>
-            <input value={user.name} onChange={ev => setUser({...user, name: ev.target.value})} placeholder="Name"/>
-            <input value={user.email} onChange={ev => setUser({...user, email: ev.target.value})} placeholder="Email"/>
-            <input type="password" onChange={ev => setUser({...user, password: ev.target.value})} placeholder="Password"/>
-            <input type="password" onChange={ev => setUser({...user, password_confirmation: ev.target.value})} placeholder="Password Confirmation"/>
+            <input value={category.name} onChange={ev => setCategory({...category, name: ev.target.value})} placeholder="Name"/>
+            <input value={category.description} onChange={ev => setCategory({...category, description: ev.target.value})} placeholder="Description"/>
             <button className="btn">Save</button>
           </form>
         )}

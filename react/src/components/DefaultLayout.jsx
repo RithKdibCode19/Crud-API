@@ -85,9 +85,9 @@ export default function DefaultLayout() {
           <Link to="/user" className="nav-link text-white mb-2 d-flex align-items-center">
             <FaChartBar className="me-2" /> User
           </Link>
-          <Link to="/settings" className="nav-link text-white mb-2 d-flex align-items-center">
+          {/* <Link to="/settings" className="nav-link text-white mb-2 d-flex align-items-center">
             <FaCog className="me-2" /> Settings
-          </Link>
+          </Link> */}
         </nav>
       </div>
 

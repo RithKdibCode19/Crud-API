@@ -18,6 +18,6 @@ class Customer extends Model
     ];
     public function orders()
     {
-        return $this->hasMany(Orders::class);
+        return $this->hasMany(Order::class);
     }
 }

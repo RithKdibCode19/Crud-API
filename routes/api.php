@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/products', ProductController::class);
+    Route::apiResource('/categories', CategoryController::class);
+    Route::apiResource('customers', CustomerController::class);
+    Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show']);
+    Route::get('/dashboard-summary', [DashboardController::class, 'dashboardSummary']);
 });
 
 Route::post('/signup', [AuthController::class, 'signup']);
