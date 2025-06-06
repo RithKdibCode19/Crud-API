@@ -21,3 +21,7 @@ Make sure you have environment setup properly. You will need PHP8.1, composer an
 9. Copy `react/.env.example` into `.env` and adjust the `VITE_API_BASE_URL` parameter
 9. Run `npm install`
 10. Run `npm run dev` to start vite server for React
+
+## Donwload project zip
+1. just ater downlaod and then extract 
+2. import database into your project

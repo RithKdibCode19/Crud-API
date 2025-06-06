@@ -17,7 +17,8 @@ class ProductController extends Controller
     public function index()
     {
         try{
-            $products = Product::with('category')->get();
+            $products = Product::with('category')->where('status','active')->latest()->get();
+
             return response()->json([
                 'message' => 'Data retrieve success',
                 'products' => $products

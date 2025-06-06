@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -51,12 +52,16 @@ class OrderController extends Controller
             ]);
 
             foreach ($request->items as $item) {
-                OrderItem::create([
+                $orderItem = OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                     'subtotal' => $item['price'] * $item['quantity'],
+                ]);
+                $product = Product::find($orderItem['product_id']);
+                $product->update([
+                    'qty' => $product->qty - $orderItem['quantity'],
                 ]);
             }
 

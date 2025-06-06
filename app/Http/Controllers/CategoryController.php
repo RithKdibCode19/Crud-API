@@ -15,7 +15,7 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $categories = Category::all();
+            $categories = Category::latest()->get();
 
             if ($categories->isEmpty()) {
                 return response()->json([

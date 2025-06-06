@@ -1,7 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../../axios-client";
 import { useStateContext } from "../../context/ContextProvider";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Button,
+  Switch,
+  FormControlLabel,
+  LinearProgress,
+  Avatar,
+  Grid,
+  Paper,
+} from "@mui/material";
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 const ProductForm = () => {
   let { id } = useParams();
@@ -21,6 +42,10 @@ const ProductForm = () => {
   const { setNotification } = useStateContext();
   const [categories, setCategories] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [errors, setErrors] = useState({});
+  const fileInputRef = useRef();
 
   // Fetch product if editing
   useEffect(() => {
@@ -34,8 +59,9 @@ const ProductForm = () => {
           // If product has image, show toggle and preview
           if (data.product.image) {
             setIsToggled(true);
-            setImagePreview(`${import.meta.env.VITE_API_BASE_URL}/${data.product.image}`);
-            console.log(data.product.image);
+            setImagePreview(
+              `${import.meta.env.VITE_API_BASE_URL}/${data.product.image}`
+            );
           }
         })
         .catch(() => {
@@ -58,6 +84,22 @@ const ProductForm = () => {
       });
   }, []);
 
+  // Drag & Drop handlers
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      setProducts({ ...products, image: file });
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setProducts({
@@ -73,6 +115,13 @@ const ProductForm = () => {
     }
   };
 
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -82,7 +131,6 @@ const ProductForm = () => {
     if (isToggled) {
       submitData = new FormData();
       Object.entries(products).forEach(([key, value]) => {
-        // Only append image if it's a File (new upload)
         if (key === "image") {
           if (value instanceof File) {
             submitData.append("image", value);
@@ -92,14 +140,23 @@ const ProductForm = () => {
         }
       });
       config.headers = { "Content-Type": "multipart/form-data" };
+      config.onUploadProgress = (progressEvent) => {
+        const percent = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        setProgress(percent);
+      };
     }
+
+    setProgress(0);
 
     if (products.id) {
       axiosClient
         .post(`/products/${products.id}?_method=PUT`, submitData, config)
         .then(() => {
           setNotification("Product was successfully updated");
-          navigate("/products");
+          setOpen(true);
+          setTimeout(() => navigate("/products"), 1500);
         })
         .catch((err) => {
           const response = err.response;
@@ -112,7 +169,8 @@ const ProductForm = () => {
         .post("/products", submitData, config)
         .then(() => {
           setNotification("Product was successfully created");
-          navigate("/products");
+          setOpen(true);
+          setTimeout(() => navigate("/products"), 1500);
         })
         .catch((err) => {
           const response = err.response;
@@ -124,151 +182,226 @@ const ProductForm = () => {
   };
 
   return (
-    <div className="row justify-content-center">
-      <div className="card animated fadeInDown col-md-7 me-2">
-        {products.id && (
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3>Update Product: {products.name}</h3>
-          </div>
-        )}
-        {!products.id && <h3>New Product</h3>}
-
-        <div className="card-body">
-          {!loading && (
-            <form className="row g-3" method="POST" onSubmit={handleSubmit}>
-              <div className="col-md-6">
-                <label htmlFor="inputName" className="form-label">
-                  Product Name
-                </label>
-                <input
-                  type="text"
-                  value={products.name}
-                  className="form-control"
-                  id="inputName"
-                  onChange={(e) =>
-                    setProducts({ ...products, name: e.target.value })
-                  }
-                />
-              </div>
-              <div className="col-md-6">
-                <label htmlFor="inputPrice" className="form-label">
-                  Price
-                </label>
-                <input
-                  type="text"
-                  value={products.price}
-                  className="form-control"
-                  id="inputPrice"
-                  onChange={(e) =>
-                    setProducts({ ...products, price: e.target.value })
-                  }
-                />
-              </div>
-              <div className="col-12">
-                <label htmlFor="inputQty" className="form-label">
-                  Quantity
-                </label>
-                <input
-                  type="text"
-                  value={products.qty}
-                  className="form-control"
-                  id="inputQty"
-                  onChange={(e) =>
-                    setProducts({ ...products, qty: e.target.value })
-                  }
-                />
-              </div>
-              <select
-                className="form-select"
-                onChange={(e) =>
-                  setProducts({ ...products, category_id: e.target.value })
-                }
-                value={products.category_id || ""}
-              >
-                <option value="" disabled>
-                  Select Category
-                </option>
-                {categories &&
-                  categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-              </select>
-              <select
-                className="form-select"
-                onChange={(e) =>
-                  setProducts({ ...products, status: e.target.value })
-                }
-                value={products.status}
-              >
-                <option value="" disabled>
-                  Select Status
-                </option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-              <div className="col-12 form-check form-switch form-switch-sm mb-3 justify-content-center">
-                <label
-                  className="form-check-label"
-                  htmlFor="flexSwitchCheckDefault"
-                >
-                  Insert Image?
-                </label>
-                <input
-                  className="form-check-input form-check-input-sm"
-                  type="checkbox"
-                  id="flexSwitchCheckDefault"
-                  checked={isToggled}
-                  onChange={() => setIsToggled(!isToggled)}
-                />
-              </div>
-              {isToggled && (
-                <div className="col-12">
-                  <label htmlFor="inputImage" className="form-label">
-                    Product Image
-                  </label>
-                  <input
-                    type="file"
-                    className="form-control"
-                    id="inputImage"
-                    accept="image/*"
-                    onChange={handleImageChange}
+    <Grid container justifyContent="center" sx={{ mt: 2 }}>
+      <Grid item xs={12} md={8} lg={6}>
+        <Card sx={{ borderRadius: 4, boxShadow: 4 }}>
+          <CardContent>
+            <Typography variant="h5" fontWeight={700} mb={2}>
+              {products.id ? `Update Product: ${products.name}` : "New Product"}
+            </Typography>
+            <Box
+              component="form"
+              noValidate
+              autoComplete="off"
+              onSubmit={handleSubmit}
+              sx={{ mt: 2 }}
+            >
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Product Name"
+                    value={products.name}
+                    onChange={(e) =>
+                      setProducts({ ...products, name: e.target.value })
+                    }
+                    fullWidth
+                    error={!!errors.name}
+                    helperText={errors.name && errors.name[0]}
                   />
-                  {/* Preview */}
-                  {imagePreview && (
-                    <div className="mt-2">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        style={{
-                          width: 120,
-                          height: 120,
-                          objectFit: "cover",
-                          border: "1px solid #ddd",
-                        }}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Price"
+                    value={products.price || ""}
+                    onChange={(e) =>
+                      setProducts({ ...products, price: e.target.value })
+                    }
+                    fullWidth
+                    error={!!errors.price}
+                    helperText={errors.price && errors.price[0]}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Quantity"
+                    value={products.qty || ""}
+                    onChange={(e) =>
+                      setProducts({ ...products, qty: e.target.value })
+                    }
+                    fullWidth
+                    error={!!errors.qty}
+                    helperText={errors.qty && errors.qty[0]}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="category-label">Category</InputLabel>
+                    <Select
+                      labelId="category-label"
+                      value={products.category_id || ""}
+                      label="Category"
+                      onChange={(e) =>
+                        setProducts({
+                          ...products,
+                          category_id: e.target.value,
+                        })
+                      }
+                      error={!!errors.category_id}
+                    >
+                      <MenuItem value="" disabled>
+                        Select Category
+                      </MenuItem>
+                      {categories &&
+                        categories.map((category) => (
+                          <MenuItem key={category.id} value={category.id}>
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="status-label">Status</InputLabel>
+                    <Select
+                      labelId="status-label"
+                      value={products.status}
+                      label="Status"
+                      onChange={(e) =>
+                        setProducts({ ...products, status: e.target.value })
+                      }
+                    >
+                      <MenuItem value="active">Active</MenuItem>
+                      <MenuItem value="inactive">Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={isToggled}
+                        onChange={() => setIsToggled(!isToggled)}
+                        color="primary"
                       />
-                    </div>
-                  )}
-                </div>
-              )}
-              <div className="col-12">
-                <button type="submit" className="btn btn-primary">
-                  save
-                </button>
-              </div>
-            </form>
-          )}
-          {loading && (
-            <div className="d-flex justify-content-center align-items-center">
-              <div className="spinner-grow text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+                    }
+                    label="Insert Image?"
+                  />
+                </Grid>
+                {isToggled && (
+                  <Grid item xs={12}>
+                    <Paper
+                      elevation={imagePreview ? 3 : 1}
+                      sx={{
+                        p: 2,
+                        border: "2px dashed #1976d2",
+                        borderRadius: 3,
+                        textAlign: "center",
+                        bgcolor: "#f8fafc",
+                        cursor: "pointer",
+                        transition: "border-color 0.2s",
+                        "&:hover": { borderColor: "#512da8" },
+                      }}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onClick={() => fileInputRef.current.click()}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        ref={fileInputRef}
+                        onChange={handleImageChange}
+                      />
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <FaCloudUploadAlt size={36} color="#1976d2" />
+                        <Typography variant="body1" sx={{ mt: 1 }}>
+                          Drag & drop or click to select an image
+                        </Typography>
+                        {imagePreview && (
+                          <Avatar
+                            src={imagePreview}
+                            alt="Preview"
+                            sx={{
+                              width: 120,
+                              height: 120,
+                              mt: 2,
+                              border: "2px solid #1976d2",
+                            }}
+                            variant="rounded"
+                          />
+                        )}
+                      </Box>
+                    </Paper>
+                    {progress > 0 && progress < 100 && (
+                      <Box sx={{ mt: 2 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={progress}
+                          sx={{ height: 8, borderRadius: 4 }}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{ mt: 1, display: "block", textAlign: "center" }}
+                        >
+                          Uploading: {progress}%
+                        </Typography>
+                      </Box>
+                    )}
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    sx={{
+                      borderRadius: 2,
+                      fontWeight: 700,
+                      px: 4,
+                      py: 1.5,
+                      boxShadow: 2,
+                      textTransform: "capitalize",
+                      fontSize: 18,
+                      mt: 2,
+                    }}
+                    disabled={loading}
+                  >
+                    Save
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+            {loading && (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                sx={{ mt: 3 }}
+              >
+                <LinearProgress sx={{ width: "100%" }} />
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Product saved successfully!
+          </Alert>
+        </Snackbar>
+      </Grid>
+    </Grid>
   );
 };
 
